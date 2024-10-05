@@ -1,0 +1,107 @@
+/* Diese Datei bitte nicht bearbeiten! */
+/* Sie wird beim nächsten Ausführen von Staticat überschrieben. */
+
+:root {
+    --blue: #1dae9b;
+    font-family: sans-serif;
+}
+
+#logo {
+    height: 7em;
+}
+
+#description p:first-child {
+    margin-top: 0em;
+}
+
+#description p:last-child {
+    margin-bottom: 0em;
+}
+
+.tree:before {
+    display: inline-block;
+    font-family: bootstrap-icons;
+    margin-right: 0.125em;
+    text-align: left;
+    width: 1.375em;
+}
+
+.directory:before {
+    content: "\f3d7";
+}
+
+.dataset:before {
+    content: "\f3b9";
+}
+
+.comma-separated {
+    display: inline;
+    list-style: none;
+}
+
+.comma-separated li {
+    display: inline;
+}
+
+.comma-separated li:after {
+    content: ", ";
+}
+
+.comma-separated li:last-child:after {
+    content: "";
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr {
+    border-bottom: 0.1em solid var(--blue);
+}
+
+tr:last-child {
+    border-bottom: none;
+}
+
+th {
+    border-right: 0.2em solid var(--blue);
+    padding: 0.3em 0.6em 0.3em 0em;
+    text-align: left;
+}
+
+td {
+    padding: 0.3em 0.6em 0.3em 0.6em;
+}
+
+ul {
+    margin: 0em;
+    padding: 0em;
+}
+
+ul li {
+    list-style-position: inside;
+}
+
+a {
+    color: var(--blue);
+    margin-right: 0.125em;
+    padding-right: 1.375em;
+    text-decoration: none;
+}
+
+a:after {
+    content: "\f1c5";
+    display: inline-block;
+    font-family: bootstrap-icons;
+    margin-right: -1.375em;
+    text-align: right;
+    width: 1.375em;
+}
+
+a[href^="mailto:"]:after {
+    content: "\f32f";
+}
+
+a:hover {
+    text-decoration: underline;
+}

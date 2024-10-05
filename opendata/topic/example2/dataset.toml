@@ -1,0 +1,26 @@
+title = "Staticat-Datensatz"
+description = """
+Ein beispielhafter offener Datensatz generiert mit Staticat.
+
+Eine Beschreibung kann mehrere Absätze umfassen.
+Markdown *wird* **auch** ~~unterstützt~~:
+
+- Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+- Aenean commodo ligula eget dolor. Aenean massa.
+
+Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat
+massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+"""
+keywords = [
+    "schlagwort1",
+    "schlagwort2",
+    "schlagwort3",
+]
+themes = [
+    "GOVE",
+    "REGI",
+]
+issued = 2024-01-31
+start_date = 2023-01-01
+end_date = 2023-12-31

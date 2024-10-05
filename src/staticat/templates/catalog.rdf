@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+    xmlns:dcat="http://www.w3.org/ns/dcat#"
+    xmlns:dcatap="http://data.europa.eu/r5r/"
+    xmlns:dcatde="http://dcat-ap.de/def/dcatde/"
+    xmlns:dct="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+>
+    <dcat:Catalog rdf:about="{{ catalog.uri }}">
+        <dct:title>{{ catalog.title }}</dct:title>
+        <dct:description>{{ catalog.description }}</dct:description>
+        <dct:publisher>
+            <foaf:Organization rdf:about="{{ catalog.publisher.uri }}">
+                <foaf:name>{{ catalog.publisher.name }}</foaf:name>
+            </foaf:Organization>
+        </dct:publisher>
+        <foaf:homepage rdf:resource="{{ catalog.uri }}" />
+        {% for dataset in catalog.datasets %}
+            <dcat:dataset>
+                <dcat:Dataset rdf:about="{{ dataset.uri }}">
+                    <dct:title>{{ dataset.title }}</dct:title>
+                    <dct:description>{{ dataset.description }}</dct:description>
+                    {% for keyword in dataset.keywords %}
+                        <dcat:keyword>{{ keyword }}</dcat:keyword>
+                    {% endfor %}
+                    {% for theme in dataset.themes %}
+                        <dcat:theme rdf:resource="http://publications.europa.eu/resource/authority/data-theme/{{ theme }}" />
+                    {% endfor %}
+                    <dct:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.issued.isoformat() }}</dct:issued>
+                    <dct:temporal>
+                        <dct:PeriodOfTime>
+                            <dcat:startDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.start_date.isoformat() }}</dcat:startDate>
+                            <dcat:endDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.end_date.isoformat() }}</dcat:endDate>
+                        </dct:PeriodOfTime>
+                    </dct:temporal>
+                    <dct:license rdf:resource="http://dcat-ap.de/def/licenses/{{ dataset.license }}" />
+                    <dcatde:licenseAttributionByText>{{ dataset.creator.name }}</dcatde:licenseAttributionByText>
+                    <dcatap:availability rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/{{ dataset.availability }}" />
+                    <dct:spatial rdf:resource="{{ dataset.spatial }}" />
+                    <dcatde:politicalGeocodingLevelURI rdf:resource="{{ dataset.political_geocoding_level }}" />
+                    <dcatde:politicalGeocodingURI rdf:resource="{{ dataset.political_geocoding }}" />
+                    <dcatde:maintainer>
+                        <foaf:Organization>
+                            <foaf:name>{{ dataset.maintainer.name }}</foaf:name>
+                            <foaf:mbox>{{ dataset.maintainer.email }}</foaf:mbox>
+                        </foaf:Organization>
+                    </dcatde:maintainer>
+                    <dcat:contactPoint>
+                        <vcard:Organization>
+                            <vcard:fn>{{ dataset.maintainer.name }}</vcard:fn>
+                            <vcard:hasEmail rdf:resource="mailto:{{ dataset.maintainer.email }}" />
+                        </vcard:Organization>
+                    </dcat:contactPoint>
+                    <dct:creator>
+                        <foaf:Organization>
+                            <foaf:name>{{ dataset.creator.name }}</foaf:name>
+                            <foaf:mbox>{{ dataset.creator.email }}</foaf:mbox>
+                        </foaf:Organization>
+                    </dct:creator>
+                    <dct:publisher>
+                        <foaf:Organization rdf:about="{{ dataset.publisher.uri }}">
+                            <foaf:name>{{ dataset.publisher.name }}</foaf:name>
+                        </foaf:Organization>
+                    </dct:publisher>
+                    {% for distribution in dataset.distributions %}
+                        <dcat:distribution>
+                            <dcat:Distribution rdf:about="{{ distribution.uri }}">
+                                <dcat:accessURL rdf:resource="{{ distribution.uri }}" />
+                                <dct:title>{{ distribution.title }}</dct:title>
+                                {% if distribution.modified %}
+                                    <dct:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ distribution.modified.isoformat() }}</dct:modified>
+                                {% endif %}
+                                {% if distribution.format %}
+                                    <dct:format rdf:resource="http://publications.europa.eu/resource/authority/file-type/{{ distribution.format }}" />
+                                {% endif %}
+                                {% if distribution.media_type %}
+                                    <dcat:mediaType>{{ distribution.media_type }}</dcat:mediaType>
+                                {% endif %}
+                                {% if distribution.byte_size %}
+                                    <dcat:byteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">{{ distribution.byte_size }}</dcat:byteSize>
+                                {% endif %}
+                                <dct:license rdf:resource="http://dcat-ap.de/def/licenses/{{ dataset.license }}" />
+                                <dcatde:licenseAttributionByText>{{ dataset.creator.name }}</dcatde:licenseAttributionByText>
+                                <dcatap:availability rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/{{ dataset.availability }}" />
+                            </dcat:Distribution>
+                        </dcat:distribution>
+                    {% endfor %}
+                </dcat:Dataset>
+            </dcat:dataset>
+        {% endfor %}
+    </dcat:Catalog>
+</rdf:RDF>
