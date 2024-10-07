@@ -208,7 +208,7 @@ class Dataset(DatasetTOML):
 
     @property
     def uri(self):
-        return f"{self.catalog_uri}/{self.relative_directory}"
+        return f"{self.catalog_uri}/{self.relative_directory.as_posix()}"
 
     def process(self):
         if self._should_convert_excel:
