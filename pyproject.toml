@@ -8,9 +8,7 @@ version = "0.0.1"
 authors = [
     { name="Hannes Riebl", email="hriebl@posteo.de" },
 ]
-description = """
-Generate static open data catalogs according to the DCAT-AP.de standard.
-"""
+description = "Generate static open data catalogs according to the DCAT-AP.de standard"
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
