@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import logging
+import sys
+import tomllib
+from pathlib import Path
+
+from staticat import ConfigTOML, staticat
+
+
+def main():
+    program_directory = Path(sys.executable).parent
+
+    logging.basicConfig(
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(program_directory / "log.txt"),
+        ],
+        level=logging.INFO,
+        format="%(asctime)s: %(levelname)s: %(message)s",
+    )
+
+    with open(program_directory / "config.toml", "rb") as file:
+        config = ConfigTOML(**tomllib.load(file))
+
+    if config.directory and not config.directory.is_absolute():
+        config.directory = program_directory / config.directory
+
+    if config.catalog_template and not config.catalog_template.is_absolute():
+        config.catalog_template = program_directory / config.catalog_template
+
+    if config.dataset_template and not config.dataset_template.is_absolute():
+        config.dataset_template = program_directory / config.dataset_template
+
+    staticat(config)
+
+
+if __name__ == "__main__":
+    main()

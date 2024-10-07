@@ -1,0 +1,40 @@
+uri = "https://hriebl.github.io/staticat"
+title = "Staticat-Katalog"
+description = """
+Ein beispielhafter Open-Data-Katalog generiert mit Staticat.
+
+Eine Beschreibung kann mehrere Absätze umfassen.
+Markdown *wird* **auch** ~~unterstützt~~:
+
+- Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+- Aenean commodo ligula eget dolor. Aenean massa.
+
+Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat
+massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+"""
+
+[publisher]
+name = "Hannes Riebl"
+uri = "https://github.com/hriebl"
+
+# Standardeinstellungen für die Datensätze im Katalog.
+# Können pro Datensatz individuell überschrieben werden.
+
+[dataset_defaults]
+license = "cc-by/4.0"
+availability = "AVAILABLE"
+spatial = "http://publications.europa.eu/resource/authority/place/DEU_LBC"
+political_geocoding = "http://dcat-ap.de/def/politicalGeocoding/districtKey/01003"
+
+[dataset_defaults.maintainer]
+name = "Hannes Riebl"
+email = "spam@spam.de"
+
+[dataset_defaults.creator]
+name = "Hannes Riebl"
+email = "spam@spam.de"
+
+[dataset_defaults.publisher]
+name = "Hannes Riebl"
+uri = "https://github.com/hriebl"
