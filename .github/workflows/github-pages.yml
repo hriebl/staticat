@@ -17,9 +17,8 @@ jobs:
             - run: pip install .[dev]
             - run: staticat opendata
             - run: touch opendata/.nojekyll
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-pages-artifact@v3
               with:
-                  name: github-pages
                   path: opendata
 
     deploy:
