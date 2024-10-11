@@ -1,0 +1,4 @@
+directory = "opendata"
+catalog_template = "templates/catalog.html"
+dataset_template = "templates/dataset.html"
+convert_excel = true

@@ -1,0 +1,40 @@
+name: github-pages
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+            - run: pip install .[dev]
+            - run: staticat opendata
+            - run: touch opendata/.nojekyll
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: github-pages
+                  path: opendata
+
+    deploy:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        needs: build
+
+        permissions:
+            pages: write
+            id-token: write
+
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+            - uses: actions/deploy-pages@v4

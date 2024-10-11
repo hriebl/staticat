@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ dataset.title }}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="{{ dataset.catalog_uri }}/default.css">
+        <link rel="stylesheet" href="{{ dataset.catalog_uri }}/user.css">
+    </head>
+    <body>
+        <img id="logo" src="https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/logo.png" alt="staticat logo">
+        <p>Offener Datensatz aus Staticat</p>
+        <table>
+            <tbody>
+                <tr>
+                    <th scope="row">Titel</th>
+                    <td>{{ dataset.title }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Beschreibung</th>
+                    <td id="description">{{ dataset.description_html | safe }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Dateien</th>
+                    <td>
+                        <ul>
+                            {% for distribution in dataset.distributions %}
+                                <li>
+                                    <span><a target="_blank" rel="noopener" href="{{ distribution.uri }}">{{ distribution.title }}</a></span>
+                                    {% if distribution.modified %}<span>, aktualisiert am {{ distribution.modified.date() }}</span>{% endif %}
+                                    {% if distribution.byte_size %}<span>, Dateigröße: {{ distribution.byte_size }} Bytes</span>{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Schlagworte</th>
+                    <td>
+                        <ul class="comma-separated">
+                            {% for keyword in dataset.keywords %}
+                                <li>{{ keyword }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Kategorien</th>
+                    <td>
+                        <ul class="comma-separated">
+                            {% for theme in dataset.themes %}
+                                <li><a target="_blank" rel="noopener" href="http://publications.europa.eu/resource/authority/data-theme/{{ theme }}">{{ theme }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Räumliche&nbsp;Abdeckung</th>
+                    <td><a target="_blank" rel="noopener" href="{{ dataset.spatial }}">{{ dataset.spatial.split("/")[-1] }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Geopolitische&nbsp;Abdeckung</th>
+                    <td>
+                        <span><a target="_blank" rel="noopener" href="{{ dataset.political_geocoding }}">{{ dataset.political_geocoding.split("/")[-1] }}</a></span>
+                        <span>(<a target="_blank" rel="noopener" href="{{ dataset.political_geocoding_level }}">{{ dataset.political_geocoding_level.split("/")[-1] }}</a>)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Zeitliche&nbsp;Abdeckung</th>
+                    <td>{{ dataset.start_date.date() }} bis {{ dataset.end_date.date() }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lizenz</th>
+                    <td><a target="_blank" rel="noopener" href="http://dcat-ap.de/def/licenses/{{ dataset.license }}">{{ dataset.license }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Verfügbarkeit</th>
+                    <td><a target="_blank" rel="noopener" href="http://publications.europa.eu/resource/authority/planned-availability/{{ dataset.availability }}">{{ dataset.availability }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Veröffentlichungsdatum</th>
+                    <td>{{ dataset.issued.date() }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Zuständige:r</th>
+                    <td><a target="_blank" rel="noopener" href="mailto:{{ dataset.maintainer.email }}">{{ dataset.maintainer.name }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Ersteller:in</th>
+                    <td><a target="_blank" rel="noopener" href="mailto:{{ dataset.creator.email }}">{{ dataset.creator.name }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Herausgeber:in</th>
+                    <td><a target="_blank" rel="noopener" href="{{ dataset.publisher.uri }}">{{ dataset.publisher.name }}</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <p><a href="#">Impressum</a> | <a href="#">Datenschutz</a></p>
+    </body>
+</html>

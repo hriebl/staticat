@@ -1,0 +1,41 @@
+title = "Wetter in Lübeck 1950-1985"
+description = """
+Tägliche Stationsbeobachtungen des Deutschen Wetterdienstes für Lübeck.
+
+Eine Beschreibung kann mehrere Absätze umfassen.
+Markdown *wird* **auch** ~~unterstützt~~:
+
+- Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+- Aenean commodo ligula eget dolor. Aenean massa.
+
+Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat
+massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+"""
+keywords = [
+    "wetter",
+    "temperatur",
+    "niederschlag",
+]
+themes = [
+    "ENVI",
+]
+issued = 2024-04-03
+start_date = 1950-03-01
+end_date = 1985-02-28
+
+[maintainer]
+name = "Deutscher Wetterdienst"
+email = "info@dwd.de"
+
+[creator]
+name = "Deutscher Wetterdienst"
+email = "info@dwd.de"
+
+[publisher]
+name = "Deutscher Wetterdienst"
+uri = "https://www.dwd.de"
+
+[[distributions]]
+uri = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/tageswerte_KL_03085_19500301_19850228_hist.zip"
+title = "tageswerte_KL_03085_19500301_19850228_hist.zip"
