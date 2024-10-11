@@ -2,8 +2,8 @@ import logging
 import os
 import tomllib
 from datetime import datetime
-from operator import attrgetter
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from urllib.parse import quote, unquote, urlparse
 
 import jinja2
 import pandas as pd
@@ -19,6 +19,13 @@ jinja2_env = jinja2.Environment(
     loader=jinja2.PackageLoader("staticat"),
     autoescape=jinja2.select_autoescape(("html", "htm", "xml", "rdf")),
 )
+
+
+def urlname(value):
+    return PurePosixPath(unquote(urlparse(value).path)).name
+
+
+jinja2_env.filters["urlname"] = urlname
 
 
 class ContactTOML(pydantic.BaseModel):
@@ -38,6 +45,7 @@ class DistributionTOML(pydantic.BaseModel):
     format: FileType | None = None
     media_type: str | None = None
     byte_size: float | None = None
+    local: bool = False
 
 
 class DatasetConfigTOML(pydantic.BaseModel):
@@ -127,12 +135,13 @@ class Dataset(DatasetTOML):
             logger.info(f"{self._log_directory}: Adding {file.name}")
 
             distribution = DistributionTOML(
-                uri=f"{self.uri}/{file.name}",
                 title=file.name,
+                uri=f"{self.uri}/{quote(file.name)}",
                 modified=datetime.fromtimestamp(file.stat().st_mtime),
                 format=FileTypeDF.loc[file.suffix]["code"],
                 media_type=FileTypeDF.loc[file.suffix]["type"],
                 byte_size=file.stat().st_size,
+                local=True,
             )
 
             self.distributions.append(distribution)
@@ -176,10 +185,6 @@ class Dataset(DatasetTOML):
             raise Exception("Could not write index.html") from error
 
     @property
-    def catalog_uri(self):
-        return self._catalog_uri
-
-    @property
     def description_html(self):
         return MarkdownIt("js-default").render(self.description)
 
@@ -203,12 +208,17 @@ class Dataset(DatasetTOML):
         raise ValueError("Invalid political geocoding")
 
     @property
+    def relative_catalog(self):
+        path = Path(*(".." for parent in self.relative_directory.parents))
+        return quote(path.as_posix())
+
+    @property
     def relative_directory(self):
         return self._directory.relative_to(self._staticat_config.directory)
 
     @property
     def uri(self):
-        return f"{self.catalog_uri}/{self.relative_directory.as_posix()}"
+        return f"{self._catalog_uri}/{quote(self.relative_directory.as_posix())}"
 
     def process(self):
         if self._should_convert_excel:
@@ -241,33 +251,19 @@ class Catalog(CatalogTOML):
         return self._config.directory
 
     def _build_tree(self):
-        self._datasets.sort(key=attrgetter("relative_directory"))
-        skip = [Path(".")]
+        datasets = {dataset.relative_directory for dataset in self._datasets}
+        parents = {parent for dataset in datasets for parent in dataset.parents}
+        items = sorted((datasets | parents) - {Path(".")})
 
-        for dataset in self._datasets:
-            parents = dataset.relative_directory.parents
-
-            for depth, parent in enumerate(reversed(parents)):
-                if parent in skip:
-                    continue
-
-                item = {
-                    "type": "directory",
-                    "depth": depth - 1,
-                    "name": parent.name,
-                }
-
-                skip.append(parent)
-                self.tree.append(item)
-
-            item = {
-                "type": "dataset",
-                "depth": len(parents) - 1,
-                "name": dataset.relative_directory.name,
-                "uri": dataset.uri,
+        self._tree = [
+            {
+                "name": item.name,
+                "href": quote((item / "index.html").as_posix()),
+                "class": "dataset" if item in datasets else "directory",
+                "depth": len(item.parents) - 1,
             }
-
-            self.tree.append(item)
+            for item in items
+        ]
 
     def _write_css(self):
         logger.info(f"{self._directory.name}: Writing default.css")

@@ -18,6 +18,10 @@
     margin-bottom: 0em;
 }
 
+.tree {
+    margin-left: calc(var(--depth) * 3em);
+}
+
 .tree:before {
     display: inline-block;
     font-family: bootstrap-icons;
