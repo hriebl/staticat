@@ -1,6 +1,6 @@
 # Staticat
 
-<img src="assets/logo.png" alt="logo" align="right" width="210">
+<img src="https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/logo.png" alt="logo" align="right" width="210">
 
 Mit Staticat können Sie *statische Open-Data-Kataloge nach dem DCAT-AP.de-Standard* direkt auf Ihrem Rechner generieren. Dazu müssen Sie nur die Dateien, die Sie veröffentlichen möchten, in einem Ordner sammeln und mit einigen wenigen Metadaten im [TOML-Format](https://toml.io) anreichern. Nachdem Sie Staticat ausgeführt haben, können Sie den Ordner anschließend auf einen einfachen Webserver hochladen. MySQL, PHP usw. werden dabei nicht benötigt.
 
@@ -65,8 +65,8 @@ Die Websites des Katalogs und der Datensätze bieten einfache, menschenlesbare A
 
 Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Folgende Screenshots können außerdem einen ersten visuellen Eindruck von Staticat vermitteln:
 
-![Screenshot Katalog](assets/screenshot-catalog.png)
-![Screenshot Datensatz](assets/screenshot-dataset.png)
+![Screenshot Katalog](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-catalog.png)
+![Screenshot Datensatz](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-dataset.png)
 
 ## Konfigurationsdateien
 
