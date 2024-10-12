@@ -14,7 +14,7 @@ Alternativ, falls Sie bereits Python auf Ihrem Rechner installiert haben, könne
 
 ## Benutzung
 
-Um einen neuen Open-Data-Katalog aufzubauen, starten Sie am einfachsten mit dem Open-Data-Ordner, der als Beispiel mit Staticat ausgeliefert wird. Sie finden den Ordner auch [hier](opendata) auf GitHub. Der Open-Data-Ordner folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
+Um einen neuen Open-Data-Katalog aufzubauen, starten Sie am einfachsten mit dem Open-Data-Ordner, der als Beispiel mit Staticat ausgeliefert wird. Sie finden den Ordner auch [hier](https://github.com/hriebl/staticat/tree/main/opendata) auf GitHub. Der Open-Data-Ordner folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
 
 Führen Sie folgende Schritte aus:
 
@@ -35,7 +35,7 @@ opendata                   ← Open-Data-Ordner
 2 directories, 3 files
 ```
 
-Nach dem DCAT-AP.de-Standard fasst ein Katalog mehrere Datensätze und ein Datensatz mehrere Distributionen, also in der Regel Dateien, zusammen. Dabei müssen sowohl der Katalog als auch die Datensätze mit einigen grundlegenden Metadaten ausgezeichnet werden. Das geschieht über die Dateien catalog.toml ([Beispieldatei](opendata/catalog.toml), [Details](#catalogtoml)) und dataset.toml ([Beispieldatei](opendata/example/dataset.toml), [Details](#datasettoml)).
+Nach dem DCAT-AP.de-Standard fasst ein Katalog mehrere Datensätze und ein Datensatz mehrere Distributionen, also in der Regel Dateien, zusammen. Dabei müssen sowohl der Katalog als auch die Datensätze mit einigen grundlegenden Metadaten ausgezeichnet werden. Das geschieht über die Dateien catalog.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/catalog.toml), [Details](#catalogtoml)) und dataset.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/example/dataset.toml), [Details](#datasettoml)).
 
 Wenn nun Staticat ausgeführt wird, legt das Programm einige zusätzliche Dateien an:
 
@@ -75,7 +75,7 @@ Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.git
 
 Die Datei config.toml muss im selben Verzeichnis wie das *portable* Programm staticat.exe liegen. Falls Sie Staticat mit pip installiert haben, also nicht die portable Version verwenden, nutzen Sie bitte die entsprechenden [Kommandozeilenargumente](#kommandozeilenargumente) anstatt der Datei config.toml.
 
-Beispieldatei: [portable/config.toml](portable/config.toml).
+Beispieldatei: [portable/config.toml](https://github.com/hriebl/staticat/tree/main/portable/config.toml).
 
 Folgende Schlüssel sind zulässig:
 
@@ -90,7 +90,7 @@ Folgende Schlüssel sind zulässig:
 
 Die Datei catalog.toml muss im Basisverzeichnis des Open-Data-Ordners liegen.
 
-Beispieldatei: [opendata/catalog.toml](opendata/catalog.toml).
+Beispieldatei: [opendata/catalog.toml](https://github.com/hriebl/staticat/tree/main/opendata/catalog.toml).
 
 Folgende Schlüssel sind zulässig:
 
@@ -109,7 +109,7 @@ Folgende Schlüssel sind zulässig:
 
 Jedes Verzeichnis im Open-Data-Ordner mit einer Datei dataset.toml wird von Staticat als Datensatz verarbeitet und zum Katalog hinzugefügt. Sollten Unklarheiten hinsichtlich der Bedeutung eines Schlüssel bestehen, können Sie das entsprechende RDF-Prädikat nachschlagen oder die HTML-Darstellung des Datensatzes zu Rate ziehen.
 
-Beispieldatei: [opendata/example/dataset.toml](opendata/example/dataset.toml).
+Beispieldatei: [opendata/example/dataset.toml](https://github.com/hriebl/staticat/tree/main/opendata/example/dataset.toml).
 
 Folgende Schlüssel sind zulässig:
 
@@ -154,7 +154,7 @@ Folgende Schlüssel sind zulässig:
 
 Falls Sie eine Online-Ressource als Distribution zu einem Datensatz hinzufügen möchten, die nicht als Datei auf Ihrem Rechner vorliegt, können Sie diese ebenfalls in der Datei dataset.toml hinterlegen. Dazu müssen Sie lediglich ein Array `[[distributions]]` mit mindestens den beiden Schlüsseln `uri` und `title` zu der Datei dataset.toml hinzufügen.
 
-Beispieldatei: [opendata/online/dataset.toml](opendata/online/dataset.toml).
+Beispieldatei: [opendata/online/dataset.toml](https://github.com/hriebl/staticat/tree/main/opendata/online/dataset.toml).
 
 Folgende Schlüssel sind zulässig:
 
