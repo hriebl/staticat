@@ -65,8 +65,9 @@ Die Websites des Katalogs und der Datensätze bieten einfache, menschenlesbare A
 
 Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Folgende Screenshots können außerdem einen ersten visuellen Eindruck von Staticat vermitteln:
 
-![Screenshot Katalog](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-catalog.png)
-![Screenshot Datensatz](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-dataset.png)
+| Katalog                                                                                                                | Datensatz                                                                                                                |
+| :--------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| ![Screenshot Katalog](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-catalog.png) | ![Screenshot Datensatz](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-dataset.png) |
 
 ## Konfigurationsdateien
 
