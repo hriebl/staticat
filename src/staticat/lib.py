@@ -80,8 +80,8 @@ class CatalogTOML(pydantic.BaseModel):
 
 
 class Dataset(DatasetTOML):
-    def __init__(self, directory, catalog, config):
-        log_directory = directory.relative_to(config.directory.parent)
+    def __init__(self, directory, catalog):
+        log_directory = directory.relative_to(catalog.config.directory.parent)
         logger.info(f"{log_directory}: Parsing dataset.toml")
 
         try:
@@ -94,8 +94,8 @@ class Dataset(DatasetTOML):
             raise Exception("Could not parse dataset.toml") from error
 
         self._directory = directory
+        self._staticat_config = catalog.config
         self._catalog_uri = catalog.uri
-        self._staticat_config = config
 
     @property
     def _should_convert_excel(self):
@@ -304,6 +304,10 @@ class Catalog(CatalogTOML):
             raise Exception("Could not write catalog.ttl") from error
 
     @property
+    def config(self):
+        return self._config
+
+    @property
     def datasets(self):
         return self._datasets
 
@@ -326,7 +330,7 @@ class Catalog(CatalogTOML):
             logger.info(f"{log_directory}: Adding dataset...")
 
             try:
-                dataset = Dataset(file.parent, catalog=self, config=self._config)
+                dataset = Dataset(file.parent, catalog=self)
                 dataset.process()
 
                 self._datasets.append(dataset)
