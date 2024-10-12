@@ -1,6 +1,6 @@
 # Staticat
 
-<img src="https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/logo.png" alt="logo" align="right" width="210">
+<img src="https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/logo.png" alt="logo" align="right" width="150">
 
 Mit Staticat können Sie *statische Open-Data-Kataloge nach dem DCAT-AP.de-Standard* direkt auf Ihrem Rechner generieren. Dazu müssen Sie nur die Dateien, die Sie veröffentlichen möchten, in einem Ordner sammeln und mit einigen wenigen Metadaten im [TOML-Format](https://toml.io) anreichern. Nachdem Sie Staticat ausgeführt haben, können Sie den Ordner anschließend auf einen einfachen Webserver hochladen. MySQL, PHP usw. werden dabei nicht benötigt.
 
@@ -14,15 +14,15 @@ Alternativ, falls Sie bereits Python auf Ihrem Rechner installiert haben, könne
 
 ## Benutzung
 
-Um einen neuen Open-Data-Katalog aufzubauen, starten Sie am einfachsten mit dem Open-Data-Ordner, der als Beispiel mit Staticat ausgeliefert wird. Sie finden den Ordner auch [hier](https://github.com/hriebl/staticat/tree/main/opendata) auf GitHub. Der Open-Data-Ordner folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
+Um einen neuen Open-Data-Katalog aufzubauen, können Sie mit dem Open-Data-Ordner starten, der als Beispiel mit Staticat ausgeliefert wird. Sie finden den Ordner auch [auf GitHub](https://github.com/hriebl/staticat/tree/main/opendata). Der Open-Data-Ordner folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
 
-Führen Sie folgende Schritte aus:
+Führen Sie nun folgende Schritte aus:
 
 1. Passen Sie die Metadaten für den gesamten Katalog in der Datei [catalog.toml](#catalogtoml) an.
 2. Ersetzen und ergänzen Sie die Beispieldatensätze nach und nach mit "echten" Datensätzen. Dazu bearbeiten Sie zunächst die Metadaten für den jeweiligen Datensatz in der Datei [dataset.toml](#datasettoml) und legen dann die Dateien, die Sie dem Datensatz zuordnen möchten, im selben Verzeichnis ab.
-3. Führen Sie Staticat aus und laden Sie den Open-Data-Ordner auf einen Webserver hoch.
+3. Nachdem Sie Staticat ausgeführt haben, laden Sie den Open-Data-Ordner auf einen Webserver hoch.
 
-Im Folgenden wird die Funktionsweise von Staticat etwas detaillierter beschrieben. Betrachten wir zum Beispiel diesen Open-Data-Ordner:
+Im Folgenden wird die Funktionsweise von Staticat etwas detaillierter beschrieben. Betrachten Sie dazu zum Beispiel diesen Open-Data-Ordner:
 
 ```
 $ tree opendata
@@ -35,9 +35,9 @@ opendata                   ← Open-Data-Ordner
 2 directories, 3 files
 ```
 
-Nach dem DCAT-AP.de-Standard fasst ein Katalog mehrere Datensätze und ein Datensatz mehrere Distributionen, also in der Regel Dateien, zusammen. Dabei müssen sowohl der Katalog als auch die Datensätze mit einigen grundlegenden Metadaten ausgezeichnet werden. Das geschieht über die Dateien catalog.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/catalog.toml), [Details](#catalogtoml)) und dataset.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/example/dataset.toml), [Details](#datasettoml)).
+Nach dem DCAT-AP.de-Standard fasst ein Katalog mehrere Datensätze und ein Datensatz mehrere Distributionen, also in der Regel Dateien, zusammen. Dabei müssen sowohl der Katalog als auch die Datensätze mit einigen grundlegenden Metadaten ausgezeichnet werden. Dies geschieht über die Dateien catalog.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/catalog.toml), [Details](#catalogtoml)) und dataset.toml ([Beispieldatei](https://github.com/hriebl/staticat/tree/main/opendata/example/dataset.toml), [Details](#datasettoml)).
 
-Wenn nun Staticat ausgeführt wird, legt das Programm einige zusätzliche Dateien an:
+Wenn Sie nun Staticat ausführen, legt das Programm einige zusätzliche Dateien an:
 
 ```
 $ tree opendata
@@ -55,15 +55,15 @@ opendata
 2 directories, 8 files
 ```
 
-Standardmäßig wandelt Staticat Excel-Dateien ins CSV-Format um. Das CSV-Format ist im Gegensatz zu den Excel-Formaten XLS und XLSX offen und nicht-proprietär und daher für Open-Data-Veröffentlichungen besser geeignet. Über die [Konfigurationsdateien](#konfigurationsdateien) lässt sich dieses Verhalten pro Datensatz anpassen.
+Excel-Dateien werden von Staticat standardmäßig ins CSV-Format umgewandelt. Das CSV-Format ist im Gegensatz zu den Formaten XLS und XLSX offen und nicht-proprietär und daher besser für Open-Data-Veröffentlichungen geeignet. Dieses Verhalten lässt sich über die [Konfigurationsdateien](#konfigurationsdateien) pro Datensatz anpassen.
 
 Die Datei catalog.ttl beschreibt den Katalog im maschinenlesbaren Turtle-Format und kann durch andere Open-Data-Portale "geharvestet", also eingelesen, werden. Wenn Sie Ihren Katalog harvesten lassen, können Ihre veröffentlichten Dateien zum Beispiel auch über das Open-Data-Portal Ihres Landes oder über [GovData](https://www.govdata.de) gefunden werden.
 
-Die Websites des Katalogs und der Datensätze bieten einfache, menschenlesbare Ansichten der veröffentlichten Dateien. Vorrangig ist der von Staticat erstellte Katalog aber für das Harvesting durch übergeordnete Open-Data-Portale gedacht.
+Die Websites des Katalogs und der Datensätze bieten eine einfache, für Menschen lesbare Ansicht der veröffentlichten Dateien. Vorrangig ist der von Staticat erstellte Katalog aber für das Harvesting durch übergeordnete Open-Data-Portale gedacht.
 
 ## Screenshots
 
-Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Folgende Screenshots können außerdem einen ersten visuellen Eindruck von Staticat vermitteln:
+Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Folgende Screenshots vermitteln außerdem einen ersten visuellen Eindruck von Staticat:
 
 | Katalog                                                                                                                | Datensatz                                                                                                                |
 | :--------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
@@ -152,7 +152,7 @@ Folgende Schlüssel sind zulässig:
 [12]: https://www.dcat-ap.de/def/politicalGeocoding/regionalKey/
 [13]: https://www.dcat-ap.de/def/politicalGeocoding/stateKey/
 
-Falls Sie eine Online-Ressource als Distribution zu einem Datensatz hinzufügen möchten, die nicht als Datei auf Ihrem Rechner vorliegt, können Sie diese ebenfalls in der Datei dataset.toml hinterlegen. Dazu müssen Sie lediglich ein Array `[[distributions]]` mit mindestens den beiden Schlüsseln `uri` und `title` zu der Datei dataset.toml hinzufügen.
+Falls Sie eine Online-Ressource als Distribution zu einem Datensatz hinzufügen möchten, die nicht als Datei auf Ihrem Rechner vorliegt, können Sie diese ebenfalls in der Datei dataset.toml hinterlegen. Dazu müssen Sie lediglich ein Array `[[distributions]]` mit mindestens den beiden Schlüsseln `uri` und `title` zur Datei dataset.toml hinzufügen.
 
 Beispieldatei: [opendata/online/dataset.toml](https://github.com/hriebl/staticat/tree/main/opendata/online/dataset.toml).
 
