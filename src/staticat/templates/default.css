@@ -2,9 +2,15 @@
 /* Sie wird beim nächsten Ausführen von Staticat überschrieben. */
 
 #logo {
-    display: inline-block;
+    float: left;
     height: 5em;
     margin-right: 1em;
+}
+
+#logo-text {
+    align-items: center;
+    display: flex;
+    height: 5em;
 }
 
 #dark {

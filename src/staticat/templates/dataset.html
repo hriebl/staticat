@@ -10,10 +10,10 @@
         <link rel="stylesheet" href="{{ dataset.relative_catalog }}/user.css">
         <script>
             function toggle(button) {
-                html = document.documentElement;
-                current = html.getAttribute("data-theme");
-                theme = current === "light" ? "dark" : "light";
-                icon = current === "light" ? "&#xF5A2;" : "&#xF496;";
+                const html = document.documentElement;
+                const current = html.getAttribute("data-theme");
+                const theme = current === "light" ? "dark" : "light";
+                const icon = current === "light" ? "&#xF5A2;" : "&#xF496;";
                 html.setAttribute("data-theme", theme);
                 button.innerHTML = icon;
             }
@@ -27,7 +27,7 @@
                     <li>
                         <a href="{{ dataset.relative_catalog }}/index.html">
                             <img id="logo" src="https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/logo.png" alt="staticat logo">
-                            <strong>Offener Datensatz aus Staticat</strong>
+                            <div id="logo-text"><strong>Offener Datensatz<br>aus Staticat</strong></div>
                         </a>
                     </li>
                 </ul>
