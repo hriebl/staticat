@@ -14,15 +14,15 @@ Alternativ, falls Sie bereits Python auf Ihrem Rechner installiert haben, könne
 
 ## Benutzung
 
-Um einen neuen Open-Data-Katalog aufzubauen, können Sie mit dem Open-Data-Ordner starten, der als Beispiel mit Staticat ausgeliefert wird. Sie finden den Ordner auch [auf GitHub](https://github.com/hriebl/staticat/tree/main/opendata). Der Open-Data-Ordner folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
+Um einen eigenen Open-Data-Katalog aufzubauen, starten Sie am einfachsten mit dem Open-Data-Ordner, der mit Staticat ausgeliefert wird. Sie finden den Ordner auch [auf GitHub](https://github.com/hriebl/staticat/tree/main/opendata). Der Aufbau folgt dem Schema: ein Verzeichnis pro Datensatz, eine oder mehrere Distributionen, also Dateien, pro Datensatz. Datensätze können dabei in beliebiger Verschachtelung und Tiefe angelegt werden.
 
 Führen Sie nun folgende Schritte aus:
 
-1. Passen Sie die Metadaten für den gesamten Katalog in der Datei [catalog.toml](#catalogtoml) an.
-2. Ersetzen und ergänzen Sie die Beispieldatensätze nach und nach mit "echten" Datensätzen. Dazu bearbeiten Sie zunächst die Metadaten für den jeweiligen Datensatz in der Datei [dataset.toml](#datasettoml) und legen dann die Dateien, die Sie dem Datensatz zuordnen möchten, im selben Verzeichnis ab.
-3. Nachdem Sie Staticat ausgeführt haben, laden Sie den Open-Data-Ordner auf einen Webserver hoch.
+1. Passen Sie zunächst die Metadaten für den gesamten Katalog in der Datei [catalog.toml](#catalogtoml) an.
+2. Ersetzen und ergänzen Sie anschließend die Beispieldatensätze nach und nach mit "echten" Datensätzen. Dazu bearbeiten Sie erst die Metadaten für den jeweiligen Datensatz in der Datei [dataset.toml](#datasettoml) und legen dann die Dateien, die Sie dem Datensatz zuordnen möchten, im selben Verzeichnis ab.
+3. Nachdem Sie Staticat ausgeführt haben, laden Sie Ihren Open-Data-Ordner zum Schluss auf einen Webserver hoch.
 
-Im Folgenden wird die Funktionsweise von Staticat etwas detaillierter beschrieben. Betrachten Sie dazu zum Beispiel diesen Open-Data-Ordner:
+Im Folgenden wird die Funktionsweise von Staticat etwas ausführlicher beschrieben. Betrachten Sie dazu zum Beispiel diesen Open-Data-Ordner:
 
 ```
 $ tree opendata
@@ -55,19 +55,19 @@ opendata
 2 directories, 8 files
 ```
 
-Excel-Dateien werden von Staticat standardmäßig ins CSV-Format umgewandelt. Das CSV-Format ist im Gegensatz zu den Formaten XLS und XLSX offen und nicht-proprietär und daher besser für Open-Data-Veröffentlichungen geeignet. Dieses Verhalten lässt sich über die [Konfigurationsdateien](#konfigurationsdateien) pro Datensatz anpassen.
+Excel-Dateien werden von Staticat standardmäßig ins CSV-Format umgewandelt. Das CSV-Format ist im Gegensatz zu den Formaten XLS und XLSX offen und nicht-proprietär und daher besser für Open-Data-Veröffentlichungen geeignet. Über die [Konfigurationsdateien](#konfigurationsdateien) lässt sich dieses Verhalten pro Datensatz anpassen.
 
-Die Datei catalog.ttl beschreibt den Katalog im maschinenlesbaren Turtle-Format und kann durch andere Open-Data-Portale "geharvestet", also eingelesen, werden. Wenn Sie Ihren Katalog harvesten lassen, können Ihre veröffentlichten Dateien zum Beispiel auch über das Open-Data-Portal Ihres Landes oder über [GovData](https://www.govdata.de) gefunden werden.
+Die Datei catalog.ttl beschreibt den Katalog im maschinenlesbaren Turtle-Format und kann durch andere Open-Data-Portale "geharvestet", also eingelesen, werden. Wenn Sie Ihren Katalog harvesten lassen, können Ihre Dateien zum Beispiel auch über das Open-Data-Portal Ihres Landes oder über [GovData](https://www.govdata.de) gefunden werden.
 
-Die Websites des Katalogs und der Datensätze bieten eine einfache, für Menschen lesbare Ansicht der veröffentlichten Dateien. Vorrangig ist der von Staticat erstellte Katalog aber für das Harvesting durch übergeordnete Open-Data-Portale gedacht.
+Die Websites des Katalogs und der Datensätze bieten eine einfache, für Menschen ansprechende Ansicht der veröffentlichten Dateien. Vorrangig ist der von Staticat erstellte Katalog aber für das Harvesting durch übergeordnete Open-Data-Portale gedacht.
 
 ## Screenshots
 
-Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Folgende Screenshots vermitteln außerdem einen ersten visuellen Eindruck von Staticat:
+Eine Online-Demo finden Sie unter [hriebl.github.io/staticat](https://hriebl.github.io/staticat). Hier außerdem zwei Screenshots von Staticat:
 
-| Katalog                                                                                                                | Datensatz                                                                                                                |
-| :--------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| ![Screenshot Katalog](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-catalog.png) | ![Screenshot Datensatz](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-dataset.png) |
+| Katalog                                                                                                                  | Datensatz                                                                                                                |
+| :----------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| ![Screenshot Katalog](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-catalog.png)   | ![Screenshot Datensatz](https://raw.githubusercontent.com/hriebl/staticat/refs/heads/main/assets/screenshot-dataset.png) |
 
 ## Konfigurationsdateien
 
@@ -179,14 +179,13 @@ $ staticat -h
 usage: staticat [-h] [-c CATALOG_TEMPLATE] [-d DATASET_TEMPLATE] [-e] directory
 
 positional arguments:
-  directory             the base directory of the local open data folder
+  directory             base directory of the local open data folder
 
 options:
   -h, --help            show this help message and exit
   -c CATALOG_TEMPLATE, --catalog-template CATALOG_TEMPLATE
-                        the path of the Jinja template for the HTML view of the catalog
+                        file path to a custom Jinja template for the HTML view of the catalog
   -d DATASET_TEMPLATE, --dataset-template DATASET_TEMPLATE
-                        the path of the Jinja template for the HTML view of the datasets
-  -e, --excel           do not convert Excel distributions to CSV. can be overridden in
-                        dataset.toml
+                        file path to a custom Jinja template for the HTML view of the datasets
+  -e, --excel           do not convert Excel files to CSV. can be overridden in dataset.toml
 ```
