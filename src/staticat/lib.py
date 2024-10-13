@@ -15,17 +15,26 @@ from .vocab import Availability, DataTheme, FileType, FileTypeDF, License
 
 logger = logging.getLogger(__name__)
 
-jinja2_env = jinja2.Environment(
-    loader=jinja2.PackageLoader("staticat"),
-    autoescape=jinja2.select_autoescape(("html", "htm", "xml", "rdf")),
-)
-
 
 def urlname(value):
     return PurePosixPath(unquote(urlparse(value).path)).name
 
 
-jinja2_env.filters["urlname"] = urlname
+def get_jinja_env(loader):
+    autoescape = jinja2.select_autoescape(("html", "htm", "xml", "rdf"))
+    env = jinja2.Environment(loader=loader, autoescape=autoescape)
+    env.filters["urlname"] = urlname
+    return env
+
+
+def get_default_template(name):
+    env = get_jinja_env(jinja2.PackageLoader("staticat"))
+    return env.get_template(name)
+
+
+def get_custom_template(path):
+    env = get_jinja_env(jinja2.FileSystemLoader(path.parent))
+    return env.get_template(path.name)
 
 
 class ContactTOML(pydantic.BaseModel):
@@ -106,7 +115,10 @@ class Dataset(DatasetTOML):
 
     @property
     def _dataset_template(self):
-        return self._staticat_config.dataset_template
+        if self._staticat_config.dataset_template is None:
+            return get_default_template("dataset.html")
+
+        return get_custom_template(self._staticat_config.dataset_template)
 
     @property
     def _log_directory(self):
@@ -173,14 +185,8 @@ class Dataset(DatasetTOML):
         logger.info(f"{self._log_directory}: Writing index.html")
 
         try:
-            if self._dataset_template:
-                with open(self._dataset_template, "r") as file:
-                    template = jinja2.Template(file.read())
-            else:
-                template = jinja2_env.get_template("dataset.html")
-
-            with open(self._directory / "index.html", "w") as file:
-                file.write(template.render(dataset=self))
+            with open(self._directory / "index.html", "w", encoding="utf-8") as file:
+                file.write(self._dataset_template.render(dataset=self))
         except Exception as error:
             raise Exception("Could not write index.html") from error
 
@@ -244,7 +250,10 @@ class Catalog(CatalogTOML):
 
     @property
     def _catalog_template(self):
-        return self._config.catalog_template
+        if self._config.catalog_template is None:
+            return get_default_template("catalog.html")
+
+        return get_custom_template(self._config.catalog_template)
 
     @property
     def _directory(self):
@@ -269,10 +278,8 @@ class Catalog(CatalogTOML):
         logger.info(f"{self._directory.name}: Writing default.css")
 
         try:
-            template = jinja2_env.get_template("default.css")
-
-            with open(self._directory / "default.css", "w") as file:
-                file.write(template.render())
+            with open(self._directory / "default.css", "w", encoding="utf-8") as file:
+                file.write(get_default_template("default.css").render())
         except Exception as error:
             raise Exception("Could not write default.css") from error
 
@@ -280,14 +287,8 @@ class Catalog(CatalogTOML):
         logger.info(f"{self._directory.name}: Writing index.html")
 
         try:
-            if self._catalog_template:
-                with open(self._catalog_template, "r") as file:
-                    template = jinja2.Template(file.read())
-            else:
-                template = jinja2_env.get_template("catalog.html")
-
-            with open(self._directory / "index.html", "w") as file:
-                file.write(template.render(catalog=self))
+            with open(self._directory / "index.html", "w", encoding="utf-8") as file:
+                file.write(self._catalog_template.render(catalog=self))
         except Exception as error:
             raise Exception("Could not write index.html") from error
 
@@ -295,11 +296,11 @@ class Catalog(CatalogTOML):
         logger.info(f"{self._directory.name}: Writing catalog.ttl")
 
         try:
-            template = jinja2_env.get_template("catalog.rdf")
+            template = get_default_template("catalog.rdf")
 
             graph = Graph()
             graph.parse(format="xml", data=template.render(catalog=self))
-            graph.serialize(self._directory / "catalog.ttl")
+            graph.serialize(self._directory / "catalog.ttl", encoding="utf-8")
         except Exception as error:
             raise Exception("Could not write catalog.ttl") from error
 
@@ -333,7 +334,7 @@ class Catalog(CatalogTOML):
                 dataset = Dataset(file.parent, catalog=self)
                 dataset.process()
 
-                self._datasets.append(dataset)
+                self.datasets.append(dataset)
             except Exception as error:
                 logger.error(
                     f"{log_directory}: Could not add dataset: {error}"
