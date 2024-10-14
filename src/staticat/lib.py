@@ -20,20 +20,20 @@ def urlname(value):
     return PurePosixPath(unquote(urlparse(value).path)).name
 
 
-def get_jinja_env(loader):
+def jinja_env(loader):
     autoescape = jinja2.select_autoescape(("html", "htm", "xml", "rdf"))
     env = jinja2.Environment(loader=loader, autoescape=autoescape)
     env.filters["urlname"] = urlname
     return env
 
 
-def get_default_template(name):
-    env = get_jinja_env(jinja2.PackageLoader("staticat"))
+def default_template(name):
+    env = jinja_env(jinja2.PackageLoader("staticat"))
     return env.get_template(name)
 
 
-def get_custom_template(path):
-    env = get_jinja_env(jinja2.FileSystemLoader(path.parent))
+def custom_template(path):
+    env = jinja_env(jinja2.FileSystemLoader(path.parent))
     return env.get_template(path.name)
 
 
@@ -90,7 +90,8 @@ class CatalogTOML(pydantic.BaseModel):
 
 class Dataset(DatasetTOML):
     def __init__(self, directory, catalog):
-        log_directory = directory.relative_to(catalog.config.directory.parent)
+        staticat_config = catalog.staticat_config
+        log_directory = directory.relative_to(staticat_config.directory.parent)
         logger.info(f"{log_directory}: Parsing dataset.toml")
 
         try:
@@ -103,96 +104,31 @@ class Dataset(DatasetTOML):
             raise Exception("Could not parse dataset.toml") from error
 
         self._directory = directory
-        self._staticat_config = catalog.config
+        self._staticat_config = staticat_config
         self._catalog_uri = catalog.uri
 
     @property
-    def _should_convert_excel(self):
-        if self.config.convert_excel is None:
-            return self._staticat_config.convert_excel
-
-        return self.config.convert_excel
+    def catalog_uri(self):
+        return self._catalog_uri
 
     @property
-    def _dataset_template(self):
-        if self._staticat_config.dataset_template is None:
-            return get_default_template("dataset.html")
-
-        return get_custom_template(self._staticat_config.dataset_template)
+    def directory(self):
+        return self._directory
 
     @property
-    def _log_directory(self):
-        return self._directory.relative_to(self._staticat_config.directory.parent)
-
-    def _add_distributions(self):
-        for file in self._directory.glob("*"):
-            if not file.is_file():
-                continue
-
-            if file.name in ("dataset.toml", "index.html"):
-                continue
-
-            if self._should_convert_excel and file.suffix in (".xls", ".xlsx"):
-                continue
-
-            if file.suffix not in FileTypeDF.index:
-                logger.warning(
-                    f"{self._log_directory}: "
-                    f"Skipping {file.name}: "
-                    "File type not supported"
-                )
-
-                continue
-
-            logger.info(f"{self._log_directory}: Adding {file.name}")
-
-            distribution = DistributionTOML(
-                title=file.name,
-                uri=f"{self.uri}/{quote(file.name)}",
-                modified=datetime.fromtimestamp(file.stat().st_mtime),
-                format=FileTypeDF.loc[file.suffix]["code"],
-                media_type=FileTypeDF.loc[file.suffix]["type"],
-                byte_size=file.stat().st_size,
-                local=True,
-            )
-
-            self.distributions.append(distribution)
-
-    def _convert_excel(self):
-        for file in self._directory.glob("*"):
-            if not file.is_file():
-                continue
-
-            if file.suffix not in (".xls", ".xlsx"):
-                continue
-
-            logger.info(f"{self._log_directory}: Converting {file.name}")
-
-            try:
-                df = pd.read_excel(file)
-                csv = self._directory / f"{file.stem}.csv"
-                df.to_csv(csv, index=False)
-
-                os.utime(csv, (file.stat().st_atime, file.stat().st_mtime))
-            except Exception as error:
-                logger.error(
-                    f"{self._log_directory}: "
-                    f"Could not convert {file.name}: "
-                    f"{error}"
-                )
-
-    def _write_html(self):
-        logger.info(f"{self._log_directory}: Writing index.html")
-
-        try:
-            with open(self._directory / "index.html", "w", encoding="utf-8") as file:
-                file.write(self._dataset_template.render(dataset=self))
-        except Exception as error:
-            raise Exception("Could not write index.html") from error
-
-    @property
-    def description_html(self):
+    def html_description(self):
         return MarkdownIt("js-default").render(self.description)
+
+    @property
+    def html_template(self):
+        if self.staticat_config.dataset_template is None:
+            return default_template("dataset.html")
+
+        return custom_template(self.staticat_config.dataset_template)
+
+    @property
+    def log_directory(self):
+        return self.directory.relative_to(self.staticat_config.directory.parent)
 
     @property
     def political_geocoding_level(self):
@@ -220,18 +156,95 @@ class Dataset(DatasetTOML):
 
     @property
     def relative_directory(self):
-        return self._directory.relative_to(self._staticat_config.directory)
+        return self.directory.relative_to(self.staticat_config.directory)
+
+    @property
+    def should_convert_excel(self):
+        if self.config.convert_excel is None:
+            return self.staticat_config.convert_excel
+
+        return self.config.convert_excel
+
+    @property
+    def staticat_config(self):
+        return self._staticat_config
 
     @property
     def uri(self):
-        return f"{self._catalog_uri}/{quote(self.relative_directory.as_posix())}"
+        return f"{self.catalog_uri}/{quote(self.relative_directory.as_posix())}"
+
+    def add_distributions(self):
+        for file in self.directory.glob("*"):
+            if not file.is_file():
+                continue
+
+            if file.name in ("dataset.toml", "index.html"):
+                continue
+
+            if self.should_convert_excel and file.suffix in (".xls", ".xlsx"):
+                continue
+
+            if file.suffix not in FileTypeDF.index:
+                logger.warning(
+                    f"{self.log_directory}: "
+                    f"Skipping {file.name}: "
+                    "File type not supported"
+                )
+
+                continue
+
+            logger.info(f"{self.log_directory}: Adding {file.name}")
+
+            distribution = DistributionTOML(
+                title=file.name,
+                uri=f"{self.uri}/{quote(file.name)}",
+                modified=datetime.fromtimestamp(file.stat().st_mtime),
+                format=FileTypeDF.loc[file.suffix]["code"],
+                media_type=FileTypeDF.loc[file.suffix]["type"],
+                byte_size=file.stat().st_size,
+                local=True,
+            )
+
+            self.distributions.append(distribution)
+
+    def convert_excel(self):
+        for file in self.directory.glob("*"):
+            if not file.is_file():
+                continue
+
+            if file.suffix not in (".xls", ".xlsx"):
+                continue
+
+            logger.info(f"{self.log_directory}: Converting {file.name}")
+
+            try:
+                df = pd.read_excel(file)
+                csv = self.directory / f"{file.stem}.csv"
+                df.to_csv(csv, index=False)
+
+                os.utime(csv, (file.stat().st_atime, file.stat().st_mtime))
+            except Exception as error:
+                logger.error(
+                    f"{self.log_directory}: "
+                    f"Could not convert {file.name}: "
+                    f"{error}"
+                )
+
+    def write_html(self):
+        logger.info(f"{self.log_directory}: Writing index.html")
+
+        try:
+            with open(self.directory / "index.html", "w", encoding="utf-8") as file:
+                file.write(self.html_template.render(dataset=self))
+        except Exception as error:
+            raise Exception("Could not write index.html") from error
 
     def process(self):
-        if self._should_convert_excel:
-            self._convert_excel()
+        if self.should_convert_excel:
+            self.convert_excel()
 
-        self._add_distributions()
-        self._write_html()
+        self.add_distributions()
+        self.write_html()
 
 
 class Catalog(CatalogTOML):
@@ -244,27 +257,47 @@ class Catalog(CatalogTOML):
         except Exception as error:
             raise Exception("Could not parse catalog.toml") from error
 
-        self._config = config
+        self._staticat_config = config
         self._datasets = []
         self._tree = []
 
     @property
-    def _catalog_template(self):
-        if self._config.catalog_template is None:
-            return get_default_template("catalog.html")
-
-        return get_custom_template(self._config.catalog_template)
+    def datasets(self):
+        return self._datasets
 
     @property
-    def _directory(self):
-        return self._config.directory
+    def directory(self):
+        return self.staticat_config.directory
 
-    def _build_tree(self):
-        datasets = {dataset.relative_directory for dataset in self._datasets}
+    @property
+    def html_description(self):
+        return MarkdownIt("js-default").render(self.description)
+
+    @property
+    def html_template(self):
+        if self.staticat_config.catalog_template is None:
+            return default_template("catalog.html")
+
+        return custom_template(self.staticat_config.catalog_template)
+
+    @property
+    def staticat_config(self):
+        return self._staticat_config
+
+    @property
+    def tree(self):
+        return self._tree
+
+    @tree.setter
+    def tree(self, value):
+        self._tree = value
+
+    def build_tree(self):
+        datasets = {dataset.relative_directory for dataset in self.datasets}
         parents = {parent for dataset in datasets for parent in dataset.parents}
         items = sorted((datasets | parents) - {Path(".")})
 
-        self._tree = [
+        self.tree = [
             {
                 "name": item.name,
                 "href": quote((item / "index.html").as_posix()),
@@ -274,60 +307,44 @@ class Catalog(CatalogTOML):
             for item in items
         ]
 
-    def _write_css(self):
-        logger.info(f"{self._directory.name}: Writing default.css")
+    def write_css(self):
+        logger.info(f"{self.directory.name}: Writing default.css")
 
         try:
-            with open(self._directory / "default.css", "w", encoding="utf-8") as file:
-                file.write(get_default_template("default.css").render())
+            with open(self.directory / "default.css", "w", encoding="utf-8") as file:
+                file.write(default_template("default.css").render())
         except Exception as error:
             raise Exception("Could not write default.css") from error
 
-    def _write_html(self):
-        logger.info(f"{self._directory.name}: Writing index.html")
+    def write_html(self):
+        logger.info(f"{self.directory.name}: Writing index.html")
 
         try:
-            with open(self._directory / "index.html", "w", encoding="utf-8") as file:
-                file.write(self._catalog_template.render(catalog=self))
+            with open(self.directory / "index.html", "w", encoding="utf-8") as file:
+                file.write(self.html_template.render(catalog=self))
         except Exception as error:
             raise Exception("Could not write index.html") from error
 
-    def _write_ttl(self):
-        logger.info(f"{self._directory.name}: Writing catalog.ttl")
+    def write_ttl(self):
+        logger.info(f"{self.directory.name}: Writing catalog.ttl")
 
         try:
-            template = get_default_template("catalog.rdf")
+            template = default_template("catalog.rdf")
 
             graph = Graph()
             graph.parse(format="xml", data=template.render(catalog=self))
-            graph.serialize(self._directory / "catalog.ttl", encoding="utf-8")
+            graph.serialize(self.directory / "catalog.ttl", encoding="utf-8")
         except Exception as error:
             raise Exception("Could not write catalog.ttl") from error
 
-    @property
-    def config(self):
-        return self._config
-
-    @property
-    def datasets(self):
-        return self._datasets
-
-    @property
-    def description_html(self):
-        return MarkdownIt("js-default").render(self.description)
-
-    @property
-    def tree(self):
-        return self._tree
-
     def process(self):
-        logger.info(f"{self._directory.name}: Processing catalog...")
+        logger.info(f"{self.directory.name}: Processing catalog...")
 
-        for file in self._directory.glob("*/**/dataset.toml"):
+        for file in self.directory.glob("*/**/dataset.toml"):
             if not file.is_file():
                 continue
 
-            log_directory = file.parent.relative_to(self._directory.parent)
+            log_directory = file.parent.relative_to(self.directory.parent)
             logger.info(f"{log_directory}: Adding dataset...")
 
             try:
@@ -342,10 +359,10 @@ class Catalog(CatalogTOML):
                 )
 
         try:
-            self._build_tree()
-            self._write_ttl()
-            self._write_css()
-            self._write_html()
+            self.build_tree()
+            self.write_ttl()
+            self.write_css()
+            self.write_html()
         except Exception as error:
             logger.critical(
                 f"{log_directory}: Could not process catalog: {error}"
