@@ -28,13 +28,18 @@ def jinja_env(loader):
 
 
 def default_template(name):
-    env = jinja_env(jinja2.PackageLoader("staticat"))
+    env = jinja_env(jinja2.PackageLoader("staticat", encoding="utf-8"))
     return env.get_template(name)
 
 
 def custom_template(path):
-    env = jinja_env(jinja2.FileSystemLoader(path.parent))
+    env = jinja_env(jinja2.FileSystemLoader(path.parent, encoding="utf-8"))
     return env.get_template(path.name)
+
+
+def write(path, data):
+    with open(path, mode="w", encoding="utf-8") as file:
+        file.write(data)
 
 
 class ContactTOML(pydantic.BaseModel):
@@ -120,13 +125,6 @@ class Dataset(DatasetTOML):
         return MarkdownIt("js-default").render(self.description)
 
     @property
-    def html_template(self):
-        if self.staticat_config.dataset_template is None:
-            return default_template("dataset.html")
-
-        return custom_template(self.staticat_config.dataset_template)
-
-    @property
     def log_directory(self):
         return self.directory.relative_to(self.staticat_config.directory.parent)
 
@@ -195,17 +193,16 @@ class Dataset(DatasetTOML):
 
             logger.info(f"{self.log_directory}: Adding {file.name}")
 
-            distribution = DistributionTOML(
-                title=file.name,
-                uri=f"{self.uri}/{quote(file.name)}",
-                modified=datetime.fromtimestamp(file.stat().st_mtime),
-                format=FileTypeDF.loc[file.suffix]["code"],
-                media_type=FileTypeDF.loc[file.suffix]["type"],
-                byte_size=file.stat().st_size,
-                local=True,
+            self.distributions.append(
+                DistributionTOML(
+                    title=file.name,
+                    uri=f"{self.uri}/{quote(file.name)}",
+                    modified=datetime.fromtimestamp(file.stat().st_mtime),
+                    format=FileTypeDF.loc[file.suffix]["code"],
+                    media_type=FileTypeDF.loc[file.suffix]["type"],
+                    byte_size=file.stat().st_size,
+                )
             )
-
-            self.distributions.append(distribution)
 
     def convert_excel(self):
         for file in self.directory.glob("*"):
@@ -230,12 +227,19 @@ class Dataset(DatasetTOML):
                     f"{error}"
                 )
 
+    def render_html(self):
+        if self.staticat_config.dataset_template:
+            template = custom_template(self.staticat_config.dataset_template)
+        else:
+            template = default_template("dataset.html")
+
+        return template.render(dataset=self)
+
     def write_html(self):
         logger.info(f"{self.log_directory}: Writing index.html")
 
         try:
-            with open(self.directory / "index.html", "w", encoding="utf-8") as file:
-                file.write(self.html_template.render(dataset=self))
+            write(self.directory / "index.html", self.render_html())
         except Exception as error:
             raise Exception("Could not write index.html") from error
 
@@ -259,7 +263,6 @@ class Catalog(CatalogTOML):
 
         self._staticat_config = config
         self._datasets = []
-        self._tree = []
 
     @property
     def datasets(self):
@@ -274,11 +277,8 @@ class Catalog(CatalogTOML):
         return MarkdownIt("js-default").render(self.description)
 
     @property
-    def html_template(self):
-        if self.staticat_config.catalog_template is None:
-            return default_template("catalog.html")
-
-        return custom_template(self.staticat_config.catalog_template)
+    def log_directory(self):
+        return self.staticat_config.directory.name
 
     @property
     def staticat_config(self):
@@ -286,60 +286,19 @@ class Catalog(CatalogTOML):
 
     @property
     def tree(self):
-        return self._tree
-
-    @tree.setter
-    def tree(self, value):
-        self._tree = value
-
-    def build_tree(self):
         datasets = {dataset.relative_directory for dataset in self.datasets}
         parents = {parent for dataset in datasets for parent in dataset.parents}
         items = sorted((datasets | parents) - {Path(".")})
 
-        self.tree = [
-            {
+        for item in items:
+            yield {
                 "name": item.name,
                 "href": quote((item / "index.html").as_posix()),
                 "class": "dataset" if item in datasets else "directory",
                 "depth": len(item.parents) - 1,
             }
-            for item in items
-        ]
 
-    def write_css(self):
-        logger.info(f"{self.directory.name}: Writing default.css")
-
-        try:
-            with open(self.directory / "default.css", "w", encoding="utf-8") as file:
-                file.write(default_template("default.css").render())
-        except Exception as error:
-            raise Exception("Could not write default.css") from error
-
-    def write_html(self):
-        logger.info(f"{self.directory.name}: Writing index.html")
-
-        try:
-            with open(self.directory / "index.html", "w", encoding="utf-8") as file:
-                file.write(self.html_template.render(catalog=self))
-        except Exception as error:
-            raise Exception("Could not write index.html") from error
-
-    def write_ttl(self):
-        logger.info(f"{self.directory.name}: Writing catalog.ttl")
-
-        try:
-            template = default_template("catalog.rdf")
-
-            graph = Graph()
-            graph.parse(format="xml", data=template.render(catalog=self))
-            graph.serialize(self.directory / "catalog.ttl", encoding="utf-8")
-        except Exception as error:
-            raise Exception("Could not write catalog.ttl") from error
-
-    def process(self):
-        logger.info(f"{self.directory.name}: Processing catalog...")
-
+    def add_datasets(self):
         for file in self.directory.glob("*/**/dataset.toml"):
             if not file.is_file():
                 continue
@@ -358,14 +317,57 @@ class Catalog(CatalogTOML):
                     + (f": {error.__cause__}" if error.__cause__ else "")
                 )
 
+    def render_css(self):
+        return default_template("default.css").render()
+
+    def render_html(self):
+        if self.staticat_config.catalog_template:
+            template = custom_template(self.staticat_config.catalog_template)
+        else:
+            template = default_template("catalog.html")
+
+        return template.render(catalog=self)
+
+    def render_rdf(self):
+        return default_template("catalog.rdf").render(catalog=self)
+
+    def write_css(self):
+        logger.info(f"{self.directory.name}: Writing default.css")
+
         try:
-            self.build_tree()
+            write(self.directory / "default.css", self.render_css())
+        except Exception as error:
+            raise Exception("Could not write default.css") from error
+
+    def write_html(self):
+        logger.info(f"{self.directory.name}: Writing index.html")
+
+        try:
+            write(self.directory / "index.html", self.render_html())
+        except Exception as error:
+            raise Exception("Could not write index.html") from error
+
+    def write_ttl(self):
+        logger.info(f"{self.directory.name}: Writing catalog.ttl")
+
+        try:
+            graph = Graph()
+            graph.parse(format="xml", data=self.render_rdf())
+            graph.serialize(self.directory / "catalog.ttl", encoding="utf-8")
+        except Exception as error:
+            raise Exception("Could not write catalog.ttl") from error
+
+    def process(self):
+        logger.info(f"{self.directory.name}: Processing catalog...")
+        self.add_datasets()
+
+        try:
             self.write_ttl()
             self.write_css()
             self.write_html()
         except Exception as error:
             logger.critical(
-                f"{log_directory}: Could not process catalog: {error}"
+                f"{self.log_directory}: Could not process catalog: {error}"
                 + (f": {error.__cause__}" if error.__cause__ else "")
             )
 
