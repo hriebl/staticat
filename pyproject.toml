@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "staticat"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
     { name="Hannes Riebl", email="hriebl@posteo.de" },
 ]
