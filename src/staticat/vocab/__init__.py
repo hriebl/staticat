@@ -8,6 +8,7 @@ from rdflib.namespace import DC, RDF, SKOS
 
 
 def read_rdf(name, file):
+    """Returns an enumeration of the identifiers of the concepts in the given file."""
     path = importlib.resources.files() / file
 
     graph = Graph()
@@ -27,6 +28,7 @@ License = read_rdf("License", "license.rdf")
 
 
 def read_file_type():
+    """Returns a data frame with information on the file types in the EU vocabulary."""
     path = importlib.resources.files() / "file-type.xml"
 
     tree = ET.parse(path)
@@ -57,6 +59,7 @@ FileTypeDF = read_file_type()
 
 
 def file_type_df_to_enum():
+    """Returns an enumeration of the codes of the file types in the EU vocabulary."""
     members = FileTypeDF["code"].drop_duplicates()
     return StrEnum("FileType", zip(members, members))
 
