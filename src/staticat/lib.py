@@ -390,7 +390,7 @@ class Catalog(CatalogTOML):
         return template.render(catalog=self)
 
     def render_rdf(self):
-        """Renders a RDF/XML representation of the catalog."""
+        """Renders an RDF/XML representation of the catalog."""
         return default_template("catalog.rdf").render(catalog=self)
 
     def write_css(self):
