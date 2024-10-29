@@ -238,6 +238,7 @@ class Dataset(DatasetTOML):
                     format=FileTypeDF.loc[file.suffix]["code"],
                     media_type=FileTypeDF.loc[file.suffix]["type"],
                     byte_size=file.stat().st_size,
+                    local=True,
                 )
             )
 
