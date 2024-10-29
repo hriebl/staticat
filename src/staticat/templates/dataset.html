@@ -52,13 +52,13 @@
                             <li>
                                 {% if distribution.local %}
                                     <span><a href="{{ distribution.title | urlencode }}">{{ distribution.title }}</a></span>
-                                {% else %}
+                                {%- else -%}
                                     <span><a href="{{ distribution.uri }}">{{ distribution.title }}</a></span>
-                                {% endif %}
-                                {% if distribution.modified %}
+                                {%- endif -%}
+                                {%- if distribution.modified -%}
                                     <span>, aktualisiert am {{ distribution.modified.date() }}</span>
-                                {% endif %}
-                                {% if distribution.byte_size %}
+                                {%- endif -%}
+                                {%- if distribution.byte_size -%}
                                     <span>, Dateigröße: {{ distribution.byte_size }} Bytes</span>
                                 {% endif %}
                             </li>
