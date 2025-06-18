@@ -79,12 +79,13 @@ Beispieldatei: [portable/config.toml](https://github.com/hriebl/staticat/tree/ma
 
 Folgende Schlüssel sind zulässig:
 
-| Schlüssel        | Typ                     | Beschreibung                                                    |
-| :--------------- | :---------------------- | :-------------------------------------------------------------- |
-| directory        | String                  | Basisverzeichnis des lokalen Open-Data-Ordners                  |
-| catalog_template | String <br> (optional)  | Pfad zum Jinja-Template für die HTML-Darstellung des Katalogs   |
-| dataset_template | String <br> (optional)  | Pfad zum Jinja-Template für die HTML-Darstellung der Datensätze |
-| convert_excel    | Boolean <br> (optional) | Ob Excel zu CSV umgewandelt wird (für alle Datensätze)          |
+| Schlüssel        | Typ                               | Beschreibung                                                                  |
+| :--------------- | :-------------------------------- | :---------------------------------------------------------------------------- |
+| directory        | String                            | Basisverzeichnis des lokalen Open-Data-Ordners                                |
+| catalog_template | String <br> (optional)            | Pfad zum Jinja-Template für die HTML-Darstellung des Katalogs                 |
+| dataset_template | String <br> (optional)            | Pfad zum Jinja-Template für die HTML-Darstellung der Datensätze               |
+| convert_excel    | Boolean <br> (optional)           | Ob Excel zu CSV umgewandelt wird (für alle Datensätze)                        |
+| ignore           | Array mit Strings <br> (optional) | Glob-Pattern, um Dateien und Ordner (standardmäßig versteckte) auszuschließen |
 
 ### catalog.toml
 
@@ -176,16 +177,20 @@ Falls Sie Staticat mit pip installiert haben, also nicht die portable Version ve
 
 ```
 $ staticat -h
-usage: staticat [-h] [-c CATALOG_TEMPLATE] [-d DATASET_TEMPLATE] [-e] directory
+usage: staticat [-h] [-c CATALOG_TEMPLATE] [-d DATASET_TEMPLATE] [-e] [-i [IGNORE ...]]
+                directory
 
 positional arguments:
   directory             base directory of the local open data folder
 
 options:
   -h, --help            show this help message and exit
-  -c CATALOG_TEMPLATE, --catalog-template CATALOG_TEMPLATE
+  -c, --catalog-template CATALOG_TEMPLATE
                         file path to a custom Jinja template for the HTML view of the catalog
-  -d DATASET_TEMPLATE, --dataset-template DATASET_TEMPLATE
+  -d, --dataset-template DATASET_TEMPLATE
                         file path to a custom Jinja template for the HTML view of the datasets
   -e, --excel           do not convert Excel files to CSV. can be overridden in dataset.toml
+  -i, --ignore [IGNORE ...]
+                        glob patterns of files and directories to exclude from the catalog.
+                        by default, hidden files are excluded
 ```

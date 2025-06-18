@@ -2,6 +2,7 @@ import logging
 import os
 import tomllib
 from datetime import datetime
+from fnmatch import fnmatch
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote, unquote, urlparse
 
@@ -209,7 +210,7 @@ class Dataset(DatasetTOML):
 
         Unsupported file types are skipped.
         """
-        for file in self.directory.glob("*"):
+        for file in self.directory.iterdir():
             if not file.is_file():
                 continue
 
@@ -217,6 +218,16 @@ class Dataset(DatasetTOML):
                 continue
 
             if self.should_convert_excel and file.suffix in (".xls", ".xlsx"):
+                continue
+
+            ignore = False
+
+            for pattern in self.staticat_config.ignore:
+                if fnmatch(file.name, pattern):
+                    ignore = True
+                    break
+
+            if ignore:
                 continue
 
             if file.suffix not in FileTypeDF.index:
@@ -244,11 +255,21 @@ class Dataset(DatasetTOML):
 
     def convert_excel(self):
         """Converts Excel files to CSV."""
-        for file in self.directory.glob("*"):
+        for file in self.directory.iterdir():
             if not file.is_file():
                 continue
 
             if file.suffix not in (".xls", ".xlsx"):
+                continue
+
+            ignore = False
+
+            for pattern in self.staticat_config.ignore:
+                if fnmatch(file.name, pattern):
+                    ignore = True
+                    break
+
+            if ignore:
                 continue
 
             logger.info(f"{self.log_directory}: Converting {file.name}")
@@ -359,23 +380,27 @@ class Catalog(CatalogTOML):
         Only subdirectories containing a file dataset.toml are processed and added to
         the catalog.
         """
-        for file in self.directory.glob("*/**/dataset.toml"):
-            if not file.is_file():
-                continue
+        for root, dirs, files in self.directory.walk():
+            for i in range(len(dirs) - 1, -1, -1):
+                for pattern in self.staticat_config.ignore:
+                    if fnmatch(dirs[i], pattern):
+                        del dirs[i]
+                        break
 
-            log_directory = file.parent.relative_to(self.directory.parent)
-            logger.info(f"{log_directory}: Adding dataset...")
+            if "dataset.toml" in files:
+                log_directory = root.relative_to(self.directory.parent)
+                logger.info(f"{log_directory}: Adding dataset...")
 
-            try:
-                dataset = Dataset(file.parent, catalog=self)
-                dataset.process()
+                try:
+                    dataset = Dataset(root, catalog=self)
+                    dataset.process()
 
-                self.datasets.append(dataset)
-            except Exception as error:
-                logger.error(
-                    f"{log_directory}: Could not add dataset: {error}"
-                    + (f": {error.__cause__}" if error.__cause__ else "")
-                )
+                    self.datasets.append(dataset)
+                except Exception as error:
+                    logger.error(
+                        f"{log_directory}: Could not add dataset: {error}"
+                        + (f": {error.__cause__}" if error.__cause__ else "")
+                    )
 
     def render_css(self):
         """Renders the Staticat stylesheet."""

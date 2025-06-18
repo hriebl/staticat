@@ -35,6 +35,15 @@ def main():
     )
 
     parser.add_argument(
+        "-i",
+        "--ignore",
+        help="glob patterns of files and directories to exclude from the catalog. "
+        + "by default, hidden files are excluded",
+        default=[".*"],
+        nargs="*",
+    )
+
+    parser.add_argument(
         "directory",
         help="base directory of the local open data folder",
         type=Path,
@@ -48,6 +57,7 @@ def main():
             catalog_template=args.catalog_template,
             dataset_template=args.dataset_template,
             convert_excel=not args.excel,
+            ignore=args.ignore,
         )
     )
 

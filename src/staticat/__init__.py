@@ -10,6 +10,7 @@ class ConfigTOML(pydantic.BaseModel):
     catalog_template: Path | None = None
     dataset_template: Path | None = None
     convert_excel: bool = True
+    ignore: list[str] = [".*"]
 
 
 def staticat(config):
