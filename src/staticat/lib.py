@@ -380,7 +380,9 @@ class Catalog(CatalogTOML):
         Only subdirectories containing a file dataset.toml are processed and added to
         the catalog.
         """
-        for root, dirs, files in self.directory.walk():
+        for root, dirs, files in os.walk(self.directory):
+            root = Path(root)
+
             for i in range(len(dirs) - 1, -1, -1):
                 for pattern in self.staticat_config.ignore:
                     if fnmatch(dirs[i], pattern):
