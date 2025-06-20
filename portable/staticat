@@ -2,8 +2,9 @@
 
 import logging
 import sys
-import tomllib
 from pathlib import Path
+
+import tomli
 
 from staticat import ConfigTOML, staticat
 
@@ -21,7 +22,7 @@ def main():
     )
 
     with open(program_directory / "config.toml", "rb") as file:
-        config = ConfigTOML(**tomllib.load(file))
+        config = ConfigTOML(**tomli.load(file))
 
     if config.directory and not config.directory.is_absolute():
         config.directory = program_directory / config.directory

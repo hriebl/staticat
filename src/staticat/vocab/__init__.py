@@ -1,15 +1,20 @@
-import importlib
+import importlib.resources
 import xml.etree.ElementTree as ET
-from enum import StrEnum
+from enum import Enum
 
 import pandas as pd
 from rdflib import Graph
 from rdflib.namespace import DC, RDF, SKOS
 
 
+class StrEnum(Enum):
+    def __str__(self):
+        return self.value
+
+
 def read_rdf(name, file):
     """Returns an enumeration of the identifiers of the concepts in the given file."""
-    path = importlib.resources.files() / file
+    path = importlib.resources.files("staticat") / "vocab" / file
 
     graph = Graph()
     graph.parse(path)
@@ -29,7 +34,7 @@ License = read_rdf("License", "license.rdf")
 
 def read_file_type():
     """Returns a data frame with information on the file types in the EU vocabulary."""
-    path = importlib.resources.files() / "file-type.xml"
+    path = importlib.resources.files("staticat") / "vocab" / "file-type.xml"
 
     tree = ET.parse(path)
     root = tree.getroot()

@@ -1,14 +1,15 @@
 import logging
 import os
-import tomllib
 from datetime import datetime
 from fnmatch import fnmatch
 from pathlib import Path, PurePosixPath
+from typing import Optional
 from urllib.parse import quote, unquote, urlparse
 
 import jinja2
 import pandas as pd
 import pydantic
+import tomli
 from markdown_it import MarkdownIt
 from rdflib import Graph
 
@@ -67,17 +68,17 @@ class DistributionTOML(pydantic.BaseModel):
 
     uri: str
     title: str
-    modified: datetime | None = None
-    format: FileType | None = None
-    media_type: str | None = None
-    byte_size: float | None = None
+    modified: Optional[datetime] = None
+    format: Optional[FileType] = None
+    media_type: Optional[str] = None
+    byte_size: Optional[float] = None
     local: bool = False
 
 
 class DatasetConfigTOML(pydantic.BaseModel):
     """TOML configuration defining Staticat-specific options for a dataset."""
 
-    convert_excel: bool | None = None
+    convert_excel: Optional[bool] = None
 
 
 class DatasetTOML(pydantic.BaseModel):
@@ -122,7 +123,7 @@ class Dataset(DatasetTOML):
 
         try:
             with open(directory / "dataset.toml", "rb") as file:
-                kwargs = catalog.dataset_defaults | tomllib.load(file)
+                kwargs = catalog.dataset_defaults | tomli.load(file)
                 super().__init__(**kwargs)
 
                 self.political_geocoding_level
@@ -323,7 +324,7 @@ class Catalog(CatalogTOML):
 
         try:
             with open(config.directory / "catalog.toml", "rb") as file:
-                super().__init__(**tomllib.load(file))
+                super().__init__(**tomli.load(file))
         except Exception as error:
             raise Exception("Could not parse catalog.toml") from error
 

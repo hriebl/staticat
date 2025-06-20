@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "staticat"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
     { name="Hannes Riebl", email="hriebl@posteo.de" },
 ]
 description = "Generate static open data catalogs according to the DCAT-AP.de standard"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -23,6 +23,7 @@ dependencies = [
     "pandas>=2.2",
     "pydantic>=2.8",
     "rdflib>=7.0",
+    "tomli>=2.2"
 ]
 
 [project.optional-dependencies]
