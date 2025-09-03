@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "staticat"
-version = "0.0.8"
+version = "0.0.9"
 authors = [
     { name="Hannes Riebl", email="hriebl@posteo.de" },
 ]
@@ -23,7 +23,7 @@ dependencies = [
     "pandas>=2.2",
     "pydantic>=2.8",
     "rdflib>=7.0",
-    "tomli>=2.2"
+    "tomli>=2.2;python_version<'3.11'"
 ]
 
 [project.optional-dependencies]
