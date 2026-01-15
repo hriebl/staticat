@@ -32,7 +32,7 @@ DataTheme = read_rdf("DataTheme", "data-theme.rdf")
 License = read_rdf("License", "license.rdf")
 
 
-def read_file_type():
+def read_file_type_df():
     """Returns a data frame with information on the file types in the EU vocabulary."""
     path = importlib.resources.files("staticat") / "vocab" / "file-type.xml"
 
@@ -60,13 +60,23 @@ def read_file_type():
     return df
 
 
-FileTypeDF = read_file_type()
+FileTypeDF = read_file_type_df()
 
 
-def file_type_df_to_enum():
+def read_file_type_enum():
     """Returns an enumeration of the codes of the file types in the EU vocabulary."""
-    members = FileTypeDF["code"].drop_duplicates()
+    path = importlib.resources.files("staticat") / "vocab" / "file-type.xml"
+
+    tree = ET.parse(path)
+    root = tree.getroot()
+
+    members = [
+        code.text
+        for code in root.iterfind("record/authority-code")
+        if code.text is not None
+    ]
+
     return StrEnum("FileType", zip(members, members))
 
 
-FileType = file_type_df_to_enum()
+FileType = read_file_type_enum()
