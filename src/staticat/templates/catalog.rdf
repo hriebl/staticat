@@ -29,6 +29,7 @@
                         <dcat:theme rdf:resource="http://publications.europa.eu/resource/authority/data-theme/{{ theme }}" />
                     {% endfor %}
                     <dct:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.issued.isoformat() }}</dct:issued>
+                    <dct:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.modified.isoformat() }}</dct:modified>
                     <dct:temporal>
                         <dct:PeriodOfTime>
                             <dcat:startDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">{{ dataset.start_date.isoformat() }}</dcat:startDate>

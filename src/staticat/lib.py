@@ -160,6 +160,16 @@ class Dataset(DatasetTOML):
         return self.directory.relative_to(self.staticat_config.directory.parent)
 
     @property
+    def modified(self):
+        """The datetime when the metadata was last modified.
+
+        Inferred from the modification time of the file dataset.toml
+        and used for the property dct:modified.
+        """
+        file = self.directory / "dataset.toml"
+        return datetime.fromtimestamp(file.stat().st_mtime)
+
+    @property
     def political_geocoding_level(self):
         """The political geocoding level (DCAT-AP.de property).
 
@@ -288,9 +298,7 @@ class Dataset(DatasetTOML):
                 os.utime(csv, (file.stat().st_atime, file.stat().st_mtime))
             except Exception as error:
                 logger.error(
-                    f"{self.log_directory}: "
-                    f"Could not convert {file.name}: "
-                    f"{error}"
+                    f"{self.log_directory}: Could not convert {file.name}: {error}"
                 )
 
     def render_html(self):

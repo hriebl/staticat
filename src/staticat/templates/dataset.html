@@ -114,6 +114,10 @@
                 <div>{{ dataset.issued.date() }}</div>
             </article>
             <article>
+                <header>Aktualisierungsdatum</header>
+                <div>{{ dataset.modified.date() }}</div>
+            </article>
+            <article>
                 <header>Zuständige:r</header>
                 <div><a target="_blank" rel="noopener" href="mailto:{{ dataset.maintainer.email }}">{{ dataset.maintainer.name }}</a></div>
             </article>
